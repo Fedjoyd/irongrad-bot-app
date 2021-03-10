@@ -1,0 +1,30 @@
+{
+  "name": "irongrad-bot-app",
+  "version": "0.0.1",
+  "description": "bot for twitch channel irongradtv",
+  "main": "index.js",
+  "dependencies": {
+    "discord.js": "^12.5.1",
+    "dotenv": "^8.2.0",
+    "tmi.js": "^1.7.5"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "!debug"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/fedjoyd5/irongrad-bot-app.git"
+  },
+  "keywords": [
+    "bot",
+    "discord",
+    "twitch"
+  ],
+  "author": "!fedjoyd5",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/fedjoyd5/irongrad-bot-app/issues"
+  },
+  "homepage": "https://github.com/fedjoyd5/irongrad-bot-app#readme"
+}
