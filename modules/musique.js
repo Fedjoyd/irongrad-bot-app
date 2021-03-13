@@ -32,6 +32,7 @@ module.exports.run = async function(command, args, discord, twitch)
     if (discord.is) {
         if (discord.message.deletable) { discord.message.delete({timeout:3000}); }
         
+        // --- basic ---
         if (args.length == 0)
         {
             RoomIndex = roomName.indexOf(currentRoom);
@@ -41,7 +42,23 @@ module.exports.run = async function(command, args, discord, twitch)
                 return;
             }
             discord.message.reply(roomUrl[RoomIndex]);
-        } 
+        }
+        if (args.length == 1)
+        {
+            if (args[0].toUpperCase() == 'UNSET') { currentRoom = ""; discord.message.reply("sucessfully unset !"); }
+        }
+        if (args.length == 2)
+        {
+            if (args[0].toUpperCase() == 'SET') { currentRoom = args[1]; discord.message.reply("sucessfully set !");}
+        }
+        if (args.length == 3)
+        {
+            if (args[0].toUpperCase() == 'ADD') {
+                roomName.push(args[1]);
+                roomUrl.push(args[2]);
+                discord.message.reply("room " + args[1] + "(" + args[2] + ") succesfullly added !");
+            }
+        }
     }
 
     if (twitch.is) {
