@@ -104,11 +104,9 @@ O_client.on('AuthenticationSuccess', data => {
 
 var CMD_executor = function(query, discord, twitch)
 {
-	console.log('query : ' + query);
-
 	firstSpaceIndex = query.indexOf(' ');
 	command = (firstSpaceIndex == -1 ? query : query.substring(0, firstSpaceIndex)).toUpperCase();
-	args = (firstSpaceIndex == -1 ? {} : query.substring(firstSpaceIndex + 1).split(' '));
+	args = (firstSpaceIndex == -1 ? [] : query.substring(firstSpaceIndex + 1).split(' '));
 
 	modules.forEach(mod => {
 		if ((mod.info.discord && discord.is || mod.info.twitch && twitch.is) && mod.info.commands.indexOf(command) != -1)
