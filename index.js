@@ -1,3 +1,4 @@
+const Type = require('./typedef.js');
 require("dotenv").config();
 
 // ------ discord init ------
@@ -43,9 +44,9 @@ console.log('');
 console.log('loading modules :');
 indexModInit = 0;
 fs.readdirSync(modulesFolder).forEach(file => {
-	if (file.endsWith(".js")) {
+	if (file.endsWith(".js")/* || file.endsWith(".ts")/**/) {
 		modules.push(require(modulesFolder + file));
-		modules[indexModInit].sendClient(D_client, T_client, O_client);
+		modules[indexModInit].setup(D_client, T_client, O_client);
 
 		console.log(' - ' + file + '(' + modules[indexModInit].info.name + ') ... LOADED');
 		indexModInit++;
@@ -64,7 +65,7 @@ D_client.on("ready", () => {
 
 D_client.on("message", message => {
 	if (message.content.startsWith(cmd_string) && !message.author.bot) {
-		CMD_executor(message.content.substr(cmd_string.length), { is:true, message:message }, { is:false });
+		CMD_executor(message.content.substr(cmd_string.length), new Type.DiscordDataCmd(true, message), new Type.TwitchDataCmd(false, '', null, ''));
 	}
 });
 
@@ -78,7 +79,7 @@ T_client.connect().catch(console.error);
 
 T_client.on('message', (channel, tags, message, self) => {
 	if (message.startsWith(cmd_string) && !self) {
-		CMD_executor(message.substr(cmd_string.length), { is:false }, { is:true, channel:channel, tags:tags, message:message });
+		CMD_executor(message.substr(cmd_string.length), new Type.DiscordDataCmd(false, null), new Type.TwitchDataCmd(true, channel, tags, message));
 	}
 });
 
@@ -86,22 +87,26 @@ T_client.on('message', (channel, tags, message, self) => {
 // ------ OBS ------
 //
 
-O_client.on('ConnectionOpened', data => {
-    console.log("OBSWebSocket ... READY !");
+O_client.on('AuthenticationSuccess', data => {
+    console.log("OBSWebSocket ... CONNECTED !");
+
+	OBS_Connected = true;
 });
 O_client.on('ConnectionClosed', data => {
     console.log("OBSWebSocket ... DISCONNECTED !");
+
 	OBS_Connected = false;
-});
-O_client.on('AuthenticationSuccess', data => {
-    console.log("OBSWebSocket ... AUTHENTIFIED !");
-	OBS_Connected = true;
 });
 
 //
 // --------- Command Executor ---------
 //
 
+/**
+ * @param {string} query The command
+ * @param {Type.DiscordDataCmd} discord The discord data
+ * @param {Type.TwitchDataCmd} twitch The twitch data
+ */
 var CMD_executor = function(query, discord, twitch)
 {
 	firstSpaceIndex = query.indexOf(' ');

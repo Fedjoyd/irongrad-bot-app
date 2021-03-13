@@ -1,12 +1,21 @@
+const Type = require("../typedef.js");
 const Discord = require("discord.js");
 const Tmi = require('tmi.js');
 const OBSWebSocket = require('obs-websocket-js');
 
+/** @type {Discord.Client} */
 var D_client;
+/** @type {Tmi.Client} */
 var T_client;
+/** @type {OBSWebSocket} */
 var O_client;
 
-module.exports.sendClient = function(new_D_client, new_T_client, new_O_client)
+/**
+ * @param {Discord.Client} new_D_client The discord client
+ * @param {Tmi.Client} new_T_client The twitch client
+ * @param {OBSWebSocket} new_O_client The obs client
+ */
+module.exports.setup = function(new_D_client, new_T_client, new_O_client)
 {
     D_client = new_D_client;
     T_client = new_T_client;
@@ -15,18 +24,27 @@ module.exports.sendClient = function(new_D_client, new_T_client, new_O_client)
 
 // --- main ---
 
+/** @type {string[]} */
 var roomName = [
     "metal",
     "chiptune",
     "electro"
 ];
+/** @type {string[]} */
 var roomUrl = [
     "https://w2g.tv/rooms/c7hl9yztg37lvlsrab",
     "https://w2g.tv/rooms/mjqbdws51hot66xofs",
     "https://w2g.tv/rooms/zj0xnrqpw9o5u3q9bt"
 ];
+/** @type {string} */
 var currentRoom = "";
 
+/**
+ * @param {string} command The command
+ * @param {string[]} args The command arguments
+ * @param {Type.DiscordDataCmd} discord The discord data
+ * @param {Type.TwitchDataCmd} twitch The twitch data
+ */
 module.exports.run = async function(command, args, discord, twitch)
 {
     if (discord.is) {
