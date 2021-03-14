@@ -68,7 +68,7 @@ module.exports.run = async function(command, args, discord, twitch, userPermissi
         }
         if (args.length == 2 && userPermission.isAdministrator)
         {
-            if (args[0].toUpperCase() == 'SET') { currentRoom = args[1]; discord.message.reply("sucessfully set !");}
+            if (args[0].toUpperCase() == 'SET') { currentRoom = args[1]; discord.message.reply("sucessfully set to '" + currentRoom + "' !");}
         }
         if (args.length == 3 && userPermission.isAdministrator)
         {

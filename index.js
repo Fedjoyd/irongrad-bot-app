@@ -19,7 +19,7 @@ const T_client = new Tmi.Client({
 		username: 'IrongradBot',
 		password: ('oauth:' + process.env.TWITCH_OAUTH_TOKEN)
 	},
-	channels: [ '#irongradtv', '#krurakark' ]
+	channels: [ '#irongradtv', '#krurakark', '#fedjoyd5', '#reddister' ]
 });
 
 // ------ OBS init ------
