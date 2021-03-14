@@ -44,8 +44,9 @@ var currentRoom = "";
  * @param {string[]} args The command arguments
  * @param {Type.DiscordDataCmd} discord The discord data
  * @param {Type.TwitchDataCmd} twitch The twitch data
+ * @param {Type.Permissible} userPermission The permission of user
  */
-module.exports.run = async function(command, args, discord, twitch)
+module.exports.run = async function(command, args, discord, twitch, userPermission)
 {
     if (discord.is) {
         if (discord.message.deletable) { discord.message.delete({timeout:3000}); }
@@ -61,15 +62,15 @@ module.exports.run = async function(command, args, discord, twitch)
             }
             discord.message.reply(roomUrl[RoomIndex]);
         }
-        if (args.length == 1)
+        if (args.length == 1 && userPermission.isAdministrator)
         {
             if (args[0].toUpperCase() == 'UNSET') { currentRoom = ""; discord.message.reply("sucessfully unset !"); }
         }
-        if (args.length == 2)
+        if (args.length == 2 && userPermission.isAdministrator)
         {
             if (args[0].toUpperCase() == 'SET') { currentRoom = args[1]; discord.message.reply("sucessfully set !");}
         }
-        if (args.length == 3)
+        if (args.length == 3 && userPermission.isAdministrator)
         {
             if (args[0].toUpperCase() == 'ADD') {
                 roomName.push(args[1]);

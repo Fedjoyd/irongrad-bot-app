@@ -113,10 +113,15 @@ var CMD_executor = function(query, discord, twitch)
 	command = (firstSpaceIndex == -1 ? query : query.substring(0, firstSpaceIndex)).toUpperCase();
 	args = (firstSpaceIndex == -1 ? [] : query.substring(firstSpaceIndex + 1).split(' '));
 
+	userPermission = new Type.Permissible();
+
+	if (discord.is) { userPermission.setDiscordUser(discord.message.guild, discord.message.author); }
+	if (twitch.is) { userPermission.setTwitchUser(twitch.tags); }
+
 	modules.forEach(mod => {
 		if ((mod.info.discord && discord.is || mod.info.twitch && twitch.is) && mod.info.commands.indexOf(command) != -1)
 		{
-			mod.run(command, args, discord, twitch);
+			mod.run(command, args, discord, twitch, userPermission);
 		}
 	});
 }
