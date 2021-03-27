@@ -1,3 +1,4 @@
+const events = require('events');
 const Discord = require("discord.js");
 const Tmi = require('tmi.js');
 
@@ -96,5 +97,35 @@ module.exports.Permissible = class {
         this.isAdministrator = false;
         this.isModerator = false;
         this.isSubscriber = false;
+    }
+}
+
+module.exports.Logger = class {
+    constructor() {
+        this.EvHan = new events.EventEmitter();
+
+        /**
+         * @param {string} message
+         */
+        this.log = function(message) {
+            console.log(message);
+            this.EvHan.emit('log', message);
+        }
+
+        /**
+         * @param {string} message
+         */
+        this.warn = function(message) {
+            console.warn(message);
+            this.EvHan.emit('warn', message);
+        }
+
+        /**
+         * @param {string} message
+         */
+        this.severe = function(message) {
+            console.severe(message);
+            this.EvHan.emit('severe', message);
+        }
     }
 }

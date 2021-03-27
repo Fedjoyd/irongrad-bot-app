@@ -1,6 +1,10 @@
 const Type = require('./typedef.js');
 require("dotenv").config();
 
+// ------ Logger init ------
+//
+DebugLog = new Type.Logger();
+
 // ------ discord init ------
 //
 const Discord = require("discord.js");
@@ -44,9 +48,9 @@ console.log('');
 console.log('loading modules :');
 indexModInit = 0;
 fs.readdirSync(modulesFolder).forEach(file => {
-	if (file.endsWith(".js")/* || file.endsWith(".ts")/**/) {
+	if (file.endsWith(".js")/* && file != "template.js"/* || file.endsWith(".ts") && file != "template.ts"/**/) {
 		modules.push(require(modulesFolder + file));
-		modules[indexModInit].setup(D_client, T_client, O_client);
+		modules[indexModInit].setup(D_client, T_client, O_client, DebugLog);
 
 		console.log(' - ' + file + '(' + modules[indexModInit].info.name + ') ... LOADED');
 		indexModInit++;
@@ -88,12 +92,12 @@ T_client.on('message', (channel, tags, message, self) => {
 //
 
 O_client.on('AuthenticationSuccess', data => {
-    console.log("OBSWebSocket ... CONNECTED !");
+    DebugLog.log("OBSWebSocket ... CONNECTED !");
 
 	OBS_Connected = true;
 });
 O_client.on('ConnectionClosed', data => {
-    console.log("OBSWebSocket ... DISCONNECTED !");
+    DebugLog.log("OBSWebSocket ... DISCONNECTED !");
 
 	OBS_Connected = false;
 });
