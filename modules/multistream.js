@@ -65,14 +65,14 @@ module.exports.run = async function(command, args, discord, twitch, userPermissi
         if (firstArgMaj == "ACTIVATE" && userPermission.isModAdm()) { activated = true; Type.Logger.log("multistream activated"); hasDoCommand = true; }
         if (firstArgMaj == "DESACTIVATE" && userPermission.isModAdm()) { activated = false; Type.Logger.log("multistream desactivated"); hasDoCommand = true; }
         if (firstArgMaj == "ADD" && userPermission.isAdministrator && args.length > 1 && discord.is) {
-            for (ite = 1; i > args.length; ite++) {
+            for (ite = 1; ite < args.length; ite++) {
                 listChaine.push(args[ite]);
                 Type.Logger.log(args[ite] + " was added to multistream");
             }
             regenerateURL();
             hasDoCommand = true;
         }
-        if (firstArgMaj == "RESET" && userPermission.isAdministrator && args.length > 1 && discord.is) {
+        if (firstArgMaj == "RESET" && userPermission.isAdministrator && discord.is) {
             listChaine = [ 'irongradtv' ];
             Type.Logger.log("multistream was reset to irongradtv");
             regenerateURL();
@@ -99,7 +99,10 @@ module.exports.run = async function(command, args, discord, twitch, userPermissi
     }
 
     if (discord.is) { if(discord.message.deletable) { discord.message.delete({timeout:3000}); }}
-    if (hasDoCommand) return;
+    if (hasDoCommand) {
+        if (discord.is) { discord.message.reply("command was succesfully executed !"); }
+        return; 
+    }
 
     if (discord.is) {
         if (activated) { discord.message.reply(currentURL); }
