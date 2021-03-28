@@ -22,19 +22,6 @@ module.exports.setup = function(new_D_client, new_T_client, new_O_client)
     O_client = new_O_client;
 }
 
-/**
- * @param {Type.Permissible} permissible The discord client
- * @param {Tmi.Userstate} twitchUser The discord client
- */
-twitchTRT = function(permissible, twitchUser){
-    Type.Logger.log(twitchUser["display-name"] + ' is moderator : ' + permissible.isModerator);
-}
-Type.PermissibleEvents.on('twitch', twitchTRT);
-
-Type.LoggerEvents.on('log', function(message){
-    console.log('message "' + message + "' was double logged LUL");
-});
-
 // --- main ---
 
 /** @type {boolean} */
