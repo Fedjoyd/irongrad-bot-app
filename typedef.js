@@ -1,4 +1,4 @@
-const events = require('events');
+const event = require('events');
 const Discord = require("discord.js");
 const Tmi = require('tmi.js');
 
@@ -30,30 +30,7 @@ module.exports.TwitchDataCmd = class {
 
 // ---- Permissible ----
 
-var administratorRoles = '';
-var moderatorRoles = '';
-var subscriberRoles = '';
-
-/**
- * @param {string} newAdministratorRoles
- */
- module.exports.setAdministratorRoles = function (newAdministratorRoles) {
-    administratorRoles = newAdministratorRoles;
-};
-
-/**
- * @param {string} newModeratorRoles
- */
-module.exports.setModeratorRoles = function (newModeratorRoles) {
-    moderatorRoles = newModeratorRoles;
-};
-
-/**
- * @param {string} newSubscriberRoles
- */
-module.exports.setSubscriberRoles = function (newSubscriberRoles) {
-    subscriberRoles = newSubscriberRoles;
-};
+module.exports.PermissibleEvents = new event.EventEmitter();
 
 module.exports.Permissible = class {
     constructor() {
@@ -62,17 +39,12 @@ module.exports.Permissible = class {
          * @param {Discord.User} User
          */
         this.setDiscordUser = function(Guild, User) {
-            if (Guild === undefined || Guild === null) {
-                return;
-            }
+            if (Guild === undefined || Guild === null) { return; }
 
             const GMember = Guild.member(User);
-            if (GMember !== undefined) {
-                if (GMember.permissions.has(Discord.Permissions.FLAGS.ADMINISTRATOR)) { this.isAdministrator = true; }
-                if (GMember.roles.cache.has(administratorRoles) && administratorRoles != '') { this.isAdministrator = true; }
-                if (GMember.roles.cache.has(moderatorRoles) && moderatorRoles != '') { this.isModerator = true; }
-                if (GMember.roles.cache.has(subscriberRoles) && subscriberRoles != '') { this.isSubscriber = true; }
-            }
+            if (GMember !== undefined) { if (GMember.permissions.has(Discord.Permissions.FLAGS.ADMINISTRATOR)) { this.isAdministrator = true; }}
+
+            module.exports.PermissibleEvents.emit('discord', this, Guild, User);
         }
         
         /**
@@ -82,6 +54,8 @@ module.exports.Permissible = class {
             if (User.badges.broadcaster) { this.isAdministrator = true; }
             if (User.badges.moderator) { this.isModerator = true; }
             if (User.subscriber) { this.isSubscriber = true; }
+            
+            module.exports.PermissibleEvents.emit('twitch', this, User);
         }
 
         /**
@@ -100,32 +74,34 @@ module.exports.Permissible = class {
     }
 }
 
+// ---- Logger ----
+
+module.exports.LoggerEvents = new event.EventEmitter();
+
 module.exports.Logger = class {
-    constructor() {
-        this.EvHan = new events.EventEmitter();
+    constructor() {}
 
-        /**
-         * @param {string} message
-         */
-        this.log = function(message) {
-            console.log(message);
-            this.EvHan.emit('log', message);
-        }
+    /**
+     * @param {string} message
+     */
+    static log = function(message) {
+        console.log(message);
+        module.exports.LoggerEvents.emit('log', message);
+    }
 
-        /**
-         * @param {string} message
-         */
-        this.warn = function(message) {
-            console.warn(message);
-            this.EvHan.emit('warn', message);
-        }
+    /**
+     * @param {string} message
+     */
+    static warn = function(message) {
+        console.warn(message);
+        module.exports.LoggerEvents.emit('warn', message);
+    }
 
-        /**
-         * @param {string} message
-         */
-        this.severe = function(message) {
-            console.severe(message);
-            this.EvHan.emit('severe', message);
-        }
+    /**
+     * @param {string} message
+     */
+    static severe = function(message) {
+        console.severe(message);
+        module.exports.LoggerEvents.emit('severe', message);
     }
 }

@@ -9,21 +9,17 @@ var D_client;
 var T_client;
 /** @type {OBSWebSocket} */
 var O_client;
-/** @type {Type.Logger} */
-var Debug;
 
 /**
  * @param {Discord.Client} new_D_client The discord client
  * @param {Tmi.Client} new_T_client The twitch client
  * @param {OBSWebSocket} new_O_client The obs client
- * @param {Type.Logger} new_Debug The console logger
  */
-module.exports.setup = function(new_D_client, new_T_client, new_O_client, new_Debug)
+module.exports.setup = function(new_D_client, new_T_client, new_O_client)
 {
     D_client = new_D_client;
     T_client = new_T_client;
     O_client = new_O_client;
-    Debug = new_Debug;
 }
 
 // --- main ---
@@ -41,19 +37,19 @@ module.exports.run = async function(command, args, discord, twitch, userPermissi
     {
         if (discord.is) { discord.message.reply('pong !'); }
         if (twitch.is) { T_client.say(twitch.channel, `@${twitch.tags.username}, pong !`); }
-        Debug.log('pong !');
+        Type.Logger.log('pong !');
     }
     if (command === 'PONG')
     {
         if (discord.is) { discord.message.reply('ping !'); }
         if (twitch.is) { T_client.say(twitch.channel, `@${twitch.tags.username}, ping !`); }
-        Debug.log('ping !');
+        Type.Logger.log('ping !');
     }
     if (command === 'HELLO')
     {
         if (discord.is) { discord.message.reply('heya !'); }
         if (twitch.is) { T_client.say(twitch.channel, `@${twitch.tags.username}, heya !`); }
-        Debug.log('heya !');
+        Type.Logger.log('heya !');
     }
 
     if (discord.is) { if(discord.message.deletable) { discord.message.delete({timeout:3000}); }}

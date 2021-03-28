@@ -9,21 +9,17 @@ var D_client;
 var T_client;
 /** @type {OBSWebSocket} */
 var O_client;
-/** @type {Type.Logger} */
-var Debug;
 
 /**
  * @param {Discord.Client} new_D_client The discord client
  * @param {Tmi.Client} new_T_client The twitch client
  * @param {OBSWebSocket} new_O_client The obs client
- * @param {Type.Logger} new_Debug The console logger
  */
-module.exports.setup = function(new_D_client, new_T_client, new_O_client, new_Debug)
+module.exports.setup = function(new_D_client, new_T_client, new_O_client)
 {
     D_client = new_D_client;
     T_client = new_T_client;
     O_client = new_O_client;
-    Debug = new_Debug;
 }
 
 // --- main ---
@@ -68,11 +64,19 @@ module.exports.run = async function(command, args, discord, twitch, userPermissi
         }
         if (args.length == 1 && userPermission.isModAdm())
         {
-            if (args[0].toUpperCase() == 'UNSET') { currentRoom = ""; discord.message.reply("sucessfully unset !"); }
+            if (args[0].toUpperCase() == 'UNSET') {
+                currentRoom = "";
+                discord.message.reply("sucessfully unset !");
+                Type.Logger.log("musique room was sucessfully unset");
+            }
         }
         if (args.length == 2 && userPermission.isModAdm())
         {
-            if (args[0].toUpperCase() == 'SET') { currentRoom = args[1]; discord.message.reply("sucessfully set to '" + currentRoom + "' !");}
+            if (args[0].toUpperCase() == 'SET') {
+                currentRoom = args[1];
+                discord.message.reply("sucessfully set to '" + currentRoom + "' !");
+                Type.Logger.log("musique room was sucessfully set to '" + currentRoom + "'");
+            }
         }
         if (args.length == 3 && userPermission.isAdministrator)
         {
@@ -80,6 +84,7 @@ module.exports.run = async function(command, args, discord, twitch, userPermissi
                 roomName.push(args[1]);
                 roomUrl.push(args[2]);
                 discord.message.reply("room " + args[1] + "(" + args[2] + ") succesfullly added !");
+                Type.Logger.log("musique room " + args[1] + "(" + args[2] + ") succesfullly added");
             }
         }
     }
