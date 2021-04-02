@@ -26,14 +26,8 @@ const T_client = new Tmi.Client({
 	channels: [ '#irongradtv', '#krurakark', '#fedjoyd5', '#reddister' ]
 });
 
-// ------ OBS init ------
+// ------ Database init ------
 //
-const OBSWebSocket = require('obs-websocket-js');
-const O_client = new OBSWebSocket();
-
-var OBS_Connected = false;
-var OBS_connect = function(O_address, O_password) { if (!OBS_Connected) { O_client.connect({ address: O_address, password: O_password }); }};
-var OBS_disconnect = function() { if (OBS_Connected) { O_client.disconnect(); }};
 
 // ---- module init ----
 //
@@ -50,7 +44,7 @@ indexModInit = 0;
 fs.readdirSync(modulesFolder).forEach(file => {
 	if (file.endsWith(".js") && file != "template.js"/* || file.endsWith(".ts") && file != "template.ts"/**/) {
 		modules.push(require(modulesFolder + file));
-		modules[indexModInit].setup(D_client, T_client, O_client, DebugLog);
+		modules[indexModInit].setup(D_client, T_client);
 
 		console.log(' - ' + file + '(' + modules[indexModInit].info.name + ') ... LOADED');
 		indexModInit++;
@@ -88,19 +82,8 @@ T_client.on('message', (channel, tags, message, self) => {
 });
 
 //
-// ------ OBS ------
+// ------ Database ------
 //
-
-O_client.on('AuthenticationSuccess', data => {
-    DebugLog.log("OBSWebSocket ... CONNECTED !");
-
-	OBS_Connected = true;
-});
-O_client.on('ConnectionClosed', data => {
-    DebugLog.log("OBSWebSocket ... DISCONNECTED !");
-
-	OBS_Connected = false;
-});
 
 //
 // --------- Command Executor ---------

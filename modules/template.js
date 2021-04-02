@@ -1,25 +1,20 @@
 const Type = require("../typedef.js");
 const Discord = require("discord.js");
 const Tmi = require('tmi.js');
-const OBSWebSocket = require('obs-websocket-js');
 
 /** @type {Discord.Client} */
 var D_client;
 /** @type {Tmi.Client} */
 var T_client;
-/** @type {OBSWebSocket} */
-var O_client;
 
 /**
  * @param {Discord.Client} new_D_client The discord client
  * @param {Tmi.Client} new_T_client The twitch client
- * @param {OBSWebSocket} new_O_client The obs client
  */
-module.exports.setup = function(new_D_client, new_T_client, new_O_client)
+module.exports.setup = function(new_D_client, new_T_client)
 {
     D_client = new_D_client;
     T_client = new_T_client;
-    O_client = new_O_client;
 }
 
 // --- main ---
