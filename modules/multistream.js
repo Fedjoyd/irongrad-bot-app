@@ -61,8 +61,8 @@ module.exports.run = async function(command, args, discord, twitch, userPermissi
 
     if (args.length > 0) {
         firstArgMaj = args[0].toUpperCase();
-        if (firstArgMaj == "ACTIVATE" && userPermission.isModAdm()) { activated = true; Type.Logger.log("multistream activated"); hasDoCommand = true; }
-        if (firstArgMaj == "DESACTIVATE" && userPermission.isModAdm()) { activated = false; Type.Logger.log("multistream desactivated"); hasDoCommand = true; }
+        if (firstArgMaj == "ACTIVATE" && userPermission.isModAdm) { activated = true; Type.Logger.log("multistream activated"); hasDoCommand = true; }
+        if (firstArgMaj == "DESACTIVATE" && userPermission.isModAdm) { activated = false; Type.Logger.log("multistream desactivated"); hasDoCommand = true; }
         if (firstArgMaj == "ADD" && userPermission.isAdministrator && args.length > 1 && discord.is) {
             for (ite = 1; ite < args.length; ite++) {
                 listChaine.push(args[ite]);

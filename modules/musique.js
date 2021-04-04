@@ -61,7 +61,7 @@ module.exports.run = async function(command, args, discord, twitch, userPermissi
             }
             discord.message.reply(currentRoom + " -> " + roomUrl[RoomIndex]);
         }
-        if (args.length == 1 && userPermission.isModAdm())
+        if (args.length == 1 && userPermission.isModAdm)
         {
             if (args[0].toUpperCase() == 'UNSET') {
                 currentRoom = "";
@@ -69,7 +69,7 @@ module.exports.run = async function(command, args, discord, twitch, userPermissi
                 Type.Logger.log("musique room was sucessfully unset");
             }
         }
-        if (args.length == 2 && userPermission.isModAdm())
+        if (args.length == 2 && userPermission.isModAdm)
         {
             if (args[0].toUpperCase() == 'SET') {
                 currentRoom = args[1];

@@ -35,47 +35,49 @@ module.exports.PermissibleEvents = new event.EventEmitter();
 
 module.exports.Permissible = class {
     constructor() {
-        /**
-         * @param {Discord.Guild} Guild
-         * @param {Discord.User} User
-         * @param {Discord.Message} Message
-         */
-        this.setDiscordUser = function(Guild, User, Message) {
-            if (Guild !== undefined && Guild !== null) {
-                const GMember = Guild.member(User);
-                if (GMember !== undefined) { if (GMember.permissions.has(Discord.Permissions.FLAGS.ADMINISTRATOR)) { this.isAdministrator = true; }}
-            }
-
-            module.exports.PermissibleEvents.emit('discord', this, Guild, User, Message);
-        }
-        
-        /**
-         * @param {Tmi.Userstate} User 
-         * @param {string} Channel
-         */
-        this.setTwitchUser = function(User, Channel) {
-            if (User.badges.broadcaster) { this.isAdministrator = true; }
-            if (User.badges.moderator) { this.isModerator = true; }
-            if (User.subscriber) { this.isSubscriber = true; }
-            
-            module.exports.PermissibleEvents.emit('twitch', this, User, Channel);
-        }
-
-        /**
-         * @returns {boolean}
-         */
-        this.isModAdm = function() { return (this.isAdministrator || this.isModerator); }
-
-        /**
-         * @returns {boolean}
-         */
-        this.isSubModAdm = function() { return (this.isAdministrator || this.isModerator || this.isSubscriber); }
-
         this.canExecuteCommand = true;
 
         this.isAdministrator = false;
         this.isModerator = false;
         this.isSubscriber = false;
+    }
+    
+    /**
+     * @type {boolean}
+     * @readonly
+     */
+    get isModAdm() { return (this.isAdministrator || this.isModerator); }
+    
+    /**
+     * @type {boolean}
+     * @readonly
+     */
+    get isSubModAdm() { return (this.isAdministrator || this.isModerator || this.isSubscriber); }
+
+    /**
+      * @param {Discord.Guild} Guild
+      * @param {Discord.User} User
+      * @param {Discord.Message} Message
+      */
+    setDiscordUser(Guild, User, Message) {
+        if (Guild !== undefined && Guild !== null) {
+            const GMember = Guild.member(User);
+            if (GMember !== undefined) { if (GMember.permissions.has(Discord.Permissions.FLAGS.ADMINISTRATOR)) { this.isAdministrator = true; }}
+        }
+
+        module.exports.PermissibleEvents.emit('discord', this, Guild, User, Message);
+    }
+     
+    /**
+      * @param {Tmi.Userstate} User 
+      * @param {string} Channel
+      */
+    setTwitchUser(User, Channel) {
+        if (User.badges.broadcaster) { this.isAdministrator = true; }
+        if (User.badges.moderator) { this.isModerator = true; }
+        if (User.subscriber) { this.isSubscriber = true; }
+        
+        module.exports.PermissibleEvents.emit('twitch', this, User, Channel);
     }
 }
 
@@ -125,54 +127,54 @@ module.exports.DatabaseManager = class {
         this.user = new_user;
         this.password = new_password;
         this.defaultDatabase = new_defaultDatabase;
+    }
 
-        /**
-         * @returns {mysql.Connection}
-         */
-        this.getDefaultConnection = function() {
-            var toReturnConnection = mysql.createConnection({
-                host     : this.host,
-                user     : this.user,
-                password : this.password,
-                database : this.defaultDatabase
-            });
+    /**
+     * @returns {mysql.Connection}
+     */
+    getDefaultConnection() {
+        var toReturnConnection = mysql.createConnection({
+            host     : this.host,
+            user     : this.user,
+            password : this.password,
+            database : this.defaultDatabase
+        });
 
-            toReturnConnection.connect(function(err, args) {
-                //if (err) module.exports.Logger.severe(err.code + "(" + err.errno + ", " + (err.fatal ? "fatal" : "not fatal") + ") " + err.name + " : " + err.message);
-                if (err) module.exports.Logger.severe('error connecting MYSQL : ' + err.stack);
-            });
+        toReturnConnection.connect(function(err, args) {
+            //if (err) module.exports.Logger.severe(err.code + "(" + err.errno + ", " + (err.fatal ? "fatal" : "not fatal") + ") " + err.name + " : " + err.message);
+            if (err) module.exports.Logger.severe('error connecting MYSQL : ' + err.stack);
+        });
 
-            return toReturnConnection;
-        }
+        return toReturnConnection;
+    }
 
-        /**
-         * @param {string} the_Database
-         * @returns {mysql.Connection}
-         */
-        this.getConnection = function(the_Database) {
-            var toReturnConnection = mysql.createConnection({
-                host     : this.host,
-                user     : this.user,
-                password : this.password,
-                database : the_Database
-            });
+    /**
+     * @param {string} the_Database
+     * @returns {mysql.Connection}
+     */
+    getConnection(the_Database) {
+        var toReturnConnection = mysql.createConnection({
+            host     : this.host,
+            user     : this.user,
+            password : this.password,
+            database : the_Database
+        });
 
-            toReturnConnection.connect(function(err, args) {
-                //if (err) module.exports.Logger.severe(err.code + "(" + err.errno + ", " + (err.fatal ? "fatal" : "not fatal") + ") " + err.name + " : " + err.message);
-                if (err) module.exports.Logger.severe('error connecting MYSQL : ' + err.stack);
-            });
-            
-            return toReturnConnection;
-        }
+        toReturnConnection.connect(function(err, args) {
+            //if (err) module.exports.Logger.severe(err.code + "(" + err.errno + ", " + (err.fatal ? "fatal" : "not fatal") + ") " + err.name + " : " + err.message);
+            if (err) module.exports.Logger.severe('error connecting MYSQL : ' + err.stack);
+        });
+        
+        return toReturnConnection;
+    }
 
-        /**
-         * @param {mysql.Connection} theConnection
-         */
-        this.endConnection = function(theConnection) {
-            theConnection.end(function(err){
-                //if (err) module.exports.Logger.severe(err.code + "(" + err.errno + ", " + (err.fatal ? "fatal" : "not fatal") + ") " + err.name + " : " + err.message);
-                if (err) module.exports.Logger.severe('error disconnecting MYSQL : ' + err.stack);
-            });
-        }
+    /**
+     * @param {mysql.Connection} theConnection
+     */
+    endConnection(theConnection) {
+        theConnection.end(function(err){
+            //if (err) module.exports.Logger.severe(err.code + "(" + err.errno + ", " + (err.fatal ? "fatal" : "not fatal") + ") " + err.name + " : " + err.message);
+            if (err) module.exports.Logger.severe('error disconnecting MYSQL : ' + err.stack);
+        });
     }
 }
