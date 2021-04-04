@@ -14,7 +14,7 @@ const D_client = new Discord.Client();
 //
 const Tmi = require('tmi.js');
 const T_client = new Tmi.Client({
-	options: { debug: true, messagesLogLevel: "info" },
+	options: { debug: false, messagesLogLevel: "info" },
 	connection: {
 		reconnect: true,
 		secure: true
@@ -28,6 +28,13 @@ const T_client = new Tmi.Client({
 
 // ------ Database init ------
 //
+
+const DTB_manager = new Type.DatabaseManager(
+	process.env.DATABASE_HOST,
+	process.env.DATABASE_USER,
+	process.env.DATABASE_PASSWORD,
+	process.env.DATABASE_DEFAULT_DTB
+);
 
 // ---- module init ----
 //
@@ -44,7 +51,7 @@ indexModInit = 0;
 fs.readdirSync(modulesFolder).forEach(file => {
 	if (file.endsWith(".js") && file != "template.js"/* || file.endsWith(".ts") && file != "template.ts"/**/) {
 		modules.push(require(modulesFolder + file));
-		modules[indexModInit].setup(D_client, T_client);
+		modules[indexModInit].setup(D_client, T_client, DTB_manager);
 
 		console.log(' - ' + file + '(' + modules[indexModInit].info.name + ') ... LOADED');
 		indexModInit++;
@@ -73,17 +80,15 @@ D_client.login(process.env.DISCORD_BOT_TOKEN);
 // ------ twitch ------
 //
 
-T_client.connect().catch(console.error);
+T_client.connect().then(() => {
+    console.log("twitch Bot ... READY !");
+}).catch(console.error);
 
 T_client.on('message', (channel, tags, message, self) => {
 	if (message.startsWith(cmd_string) && !self) {
 		CMD_executor(message.substr(cmd_string.length), new Type.DiscordDataCmd(false, null), new Type.TwitchDataCmd(true, channel, tags, message));
 	}
 });
-
-//
-// ------ Database ------
-//
 
 //
 // --------- Command Executor ---------
@@ -100,17 +105,19 @@ var CMD_executor = function(query, discord, twitch)
 	command = (firstSpaceIndex == -1 ? query : query.substring(0, firstSpaceIndex)).toUpperCase();
 	args = (firstSpaceIndex == -1 ? [] : query.substring(firstSpaceIndex + 1).split(' '));
 
-	userPermission = new Type.Permissible();
+	var userPermission = new Type.Permissible();
 
-	if (discord.is) { userPermission.setDiscordUser(discord.message.guild, discord.message.author); }
-	if (twitch.is) { userPermission.setTwitchUser(twitch.tags); }
+	if (discord.is) { userPermission.setDiscordUser(discord.message.guild, discord.message.author, discord.message); }
+	if (twitch.is) { userPermission.setTwitchUser(twitch.tags, twitch.channel); }
 
-	modules.forEach(mod => {
-		if ((mod.info.discord && discord.is || mod.info.twitch && twitch.is) && mod.info.commands.indexOf(command) != -1)
-		{
-			mod.run(command, args, discord, twitch, userPermission);
-		}
-	});
+	if (userPermission.canExecuteCommand) {
+		modules.forEach(mod => {
+			if ((mod.info.discord && discord.is || mod.info.twitch && twitch.is) && mod.info.commands.indexOf(command) != -1)
+			{
+				mod.run(command, args, discord, twitch, userPermission);
+			}
+		});
+	}
 }
 
 /**/

@@ -6,15 +6,19 @@ const Tmi = require('tmi.js');
 var D_client;
 /** @type {Tmi.Client} */
 var T_client;
+/** @type {Type.DatabaseManager} */
+var DTB_manager;
 
 /**
  * @param {Discord.Client} new_D_client The discord client
  * @param {Tmi.Client} new_T_client The twitch client
+ * @param {Type.DatabaseManager} new_DTB_manager the database manager
  */
-module.exports.setup = function(new_D_client, new_T_client)
+module.exports.setup = function(new_D_client, new_T_client, new_DTB_manager)
 {
     D_client = new_D_client;
     T_client = new_T_client;
+    DTB_manager = new_DTB_manager
 }
 
 // --- main ---
