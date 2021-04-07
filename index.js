@@ -110,14 +110,15 @@ var CMD_executor = function(query, discord, twitch)
 	if (discord.is) { userPermission.setDiscordUser(discord.message.guild, discord.message.author, discord.message); }
 	if (twitch.is) { userPermission.setTwitchUser(twitch.tags, twitch.channel); }
 
-	if (userPermission.canExecuteCommand) {
-		modules.forEach(mod => {
-			if ((mod.info.discord && discord.is || mod.info.twitch && twitch.is) && mod.info.commands.indexOf(command) != -1)
-			{
-				mod.run(command, args, discord, twitch, userPermission);
-			}
-		});
-	}
+	userPermission.async.then(function() {
+		if (userPermission.canExecuteCommand) {
+			modules.forEach(mod => {
+				if ((mod.info.discord && discord.is || mod.info.twitch && twitch.is) && mod.info.commands.indexOf(command) != -1) {
+					mod.run(command, args, discord, twitch, userPermission);
+				}
+			});
+		}
+	})
 }
 
 /**/

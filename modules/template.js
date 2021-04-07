@@ -18,7 +18,7 @@ module.exports.setup = function(new_D_client, new_T_client, new_DTB_manager)
 {
     D_client = new_D_client;
     T_client = new_T_client;
-    DTB_manager = new_DTB_manager
+    DTB_manager = new_DTB_manager;
 }
 
 // --- main ---
