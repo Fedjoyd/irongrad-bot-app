@@ -2,6 +2,7 @@ const Type = require("../typedef.js");
 const Discord = require("discord.js");
 const Tmi = require('tmi.js');
 const bluebird = require('bluebird');
+var shajs = require('sha.js')
 
 /** @type {Discord.Client} */
 var D_client;
@@ -96,29 +97,52 @@ module.exports.run = async function(command, args, discord, twitch, userPermissi
 {
     if (discord.is && userPermission.isAdministrator) {
         if (args.length > 0) {
-            var firstArgToUpper = args[0].toUpperCase()
+            var firstArgToUpper = args[0].toUpperCase();
             if (firstArgToUpper == "SETCHANNEL") { if (discordCmdChannel.indexOf(discord.message.channel.id)) {
                 discordCmdChannel.push(discord.message.channel.id);
 
-                DTB_manager.queryDefaultDatabase("INSERT INTO `channel_for_cmd` (`ID`) VALUES ('" + discord.message.channel.id + "')").then(function() {
-                    Type.Logger.log("[PERMISSION] : database updated");
-                }).catch(Type.Logger.error);
+                await DTB_manager.queryDefaultDatabase("INSERT INTO `channel_for_cmd` (`ID`) VALUES ('" + discord.message.channel.id + "')").catch(Type.Logger.error);
 
                 Type.Logger.log("[PERMISSION] : added a channel to execute command : " + discordCmdChannel[discordCmdChannel.length - 1]);
             }}
             if (firstArgToUpper == "RESETCHANNEL") {
                 discordCmdChannel = [];
 
-                DTB_manager.queryDefaultDatabase("TRUNCATE `channel_for_cmd`").then(function(result) {
-                    Type.Logger.log("[PERMISSION] : database updated");
-                }).catch(Type.Logger.error);
+                await DTB_manager.queryDefaultDatabase("TRUNCATE `channel_for_cmd`").catch(Type.Logger.error);
 
                 Type.Logger.log("[PERMISSION] : channels of cmd executor was reseted");
             }
         }
-
-        if(discord.message.deletable) { discord.message.delete({timeout:3000}); }
     }
+
+    if (discord.is && discord.message.guild === null) {
+        if (args.length > 0) {
+            var firstArgToUpper = args[0].toUpperCase();
+            if (firstArgToUpper == "SETTWITCH" && args.length > 1) {
+                var twtUsername = args[1].replace("'", "%30%").replace('"', "%31%");
+
+                const results = await DTB_manager.queryDefaultDatabase("SELECT * FROM `account` WHERE `twitch` = '" + twtUsername + "'");
+                if (results.length > 0) { if (results[0].discord != discord.message.author.id) {
+                    discord.message.reply("this twitch account are already linked (si c'est votre compte contacter fedjoyd5(!fedjoyd5#7367) immediatement)");
+                    return;
+                }}
+
+                DTB_manager.queryDefaultDatabase("UPDATE `account` SET `twitch` = '" + twtUsername + "' WHERE `account`.`discord` = '" + discord.message.author.id + "';").then(function(results) {
+                    discord.message.reply("twitch account successfully linked");
+                }).catch(Type.Logger.error);
+            }
+            if (firstArgToUpper == "SETPASSWORD" && args.length > 1) {
+                var Password = args[1].replace("'", "%30%").replace('"', "%31%");
+                for (inter = 2; inter < args.length; inter++) { var Password = Password + " " + args[inter].replace("'", "%30%").replace('"', "%31%"); }
+                
+                DTB_manager.queryDefaultDatabase("UPDATE `account` SET `password` = '" + shajs('sha256').update(Password).digest('hex') + "' WHERE `account`.`discord` = '" + discord.message.author.id + "';").then(function(results) {
+                    discord.message.reply("password successfully set");
+                }).catch(Type.Logger.error);
+            }
+        }
+    }
+
+    if (discord.is) { if(discord.message.deletable) { discord.message.delete({timeout:3000}); }}
 }
 
 // --- info ---
