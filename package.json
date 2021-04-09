@@ -4,7 +4,7 @@
   "description": "bot for twitch channel irongradtv",
   "main": "index.js",
   "dependencies": {
-    "discord.js": "^12.5.1",
+    "discord.js": "^12.5.3",
     "dotenv": "^8.2.0",
     "obs-websocket-js": "^4.0.2",
     "promise-mysql": "^5.0.3",
