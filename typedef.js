@@ -1,7 +1,7 @@
 const event = require('events');
 const Discord = require("discord.js");
 const Tmi = require('tmi.js');
-const mysql = require('Promise-mysql');
+const mysql = require('mysql');
 const bluebird = require('bluebird');
 
 module.exports.DiscordDataCmd = class {
@@ -151,37 +151,53 @@ module.exports.DatabaseManager = class {
     async startConnection(DatabaseToOpen) {
         if (this.m_listConnection[DatabaseToOpen] !== undefined && this.m_listConnection[DatabaseToOpen] !== null) return;
 
-        this.m_listConnection[DatabaseToOpen] = await mysql.createConnection({
+        this.m_listConnection[DatabaseToOpen] = mysql.createConnection({
             host: this.host,
             user: this.user,
             password: this.password,
             database: DatabaseToOpen
-        })
+        });
+
+        this.m_listConnection[DatabaseToOpen].connect(function(err, args) { if (err) module.exports.Logger.severe(err); });
 
         setTimeout(function(lstConnection, dtbToClose){
-            lstConnection[dtbToClose].end();
+            lstConnection[dtbToClose].end(function(err) { if (err) module.exports.Logger.warn(err); });
             lstConnection[dtbToClose] = null;
         }, this.DtbCooldown, this.m_listConnection, DatabaseToOpen);
     }
 
     /**
      * @param {string} query
-     * @returns {Promise<any>}
+     * @returns {Promise<any, mysql.FieldInfo[]>}
      */
     async queryDefaultDatabase(query) {
         await this.startConnection(this.defaultDatabase);
 
-        return this.m_listConnection[this.defaultDatabase].query(query);
+        var the_manager = this;
+
+        return new Promise(function(resolve, reject){
+            the_manager.m_listConnection[the_manager.defaultDatabase].query(query, function(err, results, fields) {
+                if (err) reject(err);
+                resolve(results, fields);
+            });
+        });
     }
 
     /**
      * @param {string} Database 
      * @param {string} query
-     * @returns {Promise<any>}
+     * @returns {Promise<any, mysql.FieldInfo[]>}
      */
     async queryDatabase(Database, query) {
         await this.startConnection(Database);
 
-        return this.m_listConnection[Database].query(query);
+        var the_manager = this;
+
+        return new Promise(function(resolve, reject){
+            the_manager.m_listConnection[Database].query(query, function(err, results, fields) {
+                if (err) reject(err);
+                resolve(results, fields);
+            });
+        });
     }
 }

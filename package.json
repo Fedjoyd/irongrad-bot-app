@@ -4,10 +4,11 @@
   "description": "bot for twitch channel irongradtv",
   "main": "index.js",
   "dependencies": {
+    "bluebird": "^3.7.2",
     "discord.js": "^12.5.3",
     "dotenv": "^8.2.0",
+    "mysql": "^2.18.1",
     "obs-websocket-js": "^4.0.2",
-    "promise-mysql": "^5.0.3",
     "socket.io": "^4.0.1",
     "tmi.js": "^1.7.5"
   },
