@@ -168,7 +168,7 @@ module.exports.DatabaseManager = class {
 
     /**
      * @param {string} query
-     * @returns {Promise<any, mysql.FieldInfo[]>}
+     * @returns {Promise<any>}
      */
     async queryDefaultDatabase(query) {
         await this.startConnection(this.defaultDatabase);
@@ -178,7 +178,7 @@ module.exports.DatabaseManager = class {
         return new Promise(function(resolve, reject){
             the_manager.m_listConnection[the_manager.defaultDatabase].query(query, function(err, results, fields) {
                 if (err) reject(err);
-                resolve(results, fields);
+                resolve(results);
             });
         });
     }
@@ -186,7 +186,7 @@ module.exports.DatabaseManager = class {
     /**
      * @param {string} Database 
      * @param {string} query
-     * @returns {Promise<any, mysql.FieldInfo[]>}
+     * @returns {Promise<any>}
      */
     async queryDatabase(Database, query) {
         await this.startConnection(Database);
@@ -196,7 +196,7 @@ module.exports.DatabaseManager = class {
         return new Promise(function(resolve, reject){
             the_manager.m_listConnection[Database].query(query, function(err, results, fields) {
                 if (err) reject(err);
-                resolve(results, fields);
+                resolve(results);
             });
         });
     }

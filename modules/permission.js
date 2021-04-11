@@ -42,7 +42,8 @@ module.exports.setup = function(new_D_client, new_T_client, new_DTB_manager)
  * @param {Discord.Message} Message 
  */
 var discordChecker = function(userPermission, Guild, User, Message) {
-    if (!Message.content.startsWith("!perm")) { if (discordCmdChannel.indexOf(Message.channel.id) == -1 && discordCmdChannel.length > 0) {
+    var MSGContent = Message.content.substring(process.env.CMD_STRING.length).toUpperCase();
+    if (!MSGContent.startsWith("PERM") && !MSGContent.startsWith("PERMISSION")) { if (discordCmdChannel.indexOf(Message.channel.id) == -1 && discordCmdChannel.length > 0) {
         userPermission.canExecuteCommand = false;
         return;
     }}
@@ -129,14 +130,6 @@ module.exports.run = async function(command, args, discord, twitch, userPermissi
 
                 DTB_manager.queryDefaultDatabase("UPDATE `account` SET `twitch` = '" + twtUsername + "' WHERE `account`.`discord` = '" + discord.message.author.id + "';").then(function(results) {
                     discord.message.reply("twitch account successfully linked");
-                }).catch(Type.Logger.error);
-            }
-            if (firstArgToUpper == "SETPASSWORD" && args.length > 1) {
-                var Password = args[1].replace("'", "%30%").replace('"', "%31%");
-                for (inter = 2; inter < args.length; inter++) { var Password = Password + " " + args[inter].replace("'", "%30%").replace('"', "%31%"); }
-                
-                DTB_manager.queryDefaultDatabase("UPDATE `account` SET `password` = '" + shajs('sha256').update(Password).digest('hex') + "' WHERE `account`.`discord` = '" + discord.message.author.id + "';").then(function(results) {
-                    discord.message.reply("password successfully set");
                 }).catch(Type.Logger.error);
             }
         }
